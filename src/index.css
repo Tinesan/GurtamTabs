@@ -134,7 +134,11 @@ code {
   outline: none;
 }
 
-.btn:hover {
+.btn:disabled {
+  background-color: #817e82;
+}
+
+.btn:not(:disabled):hover {
   background-color: #9039b4;
   cursor: pointer;
   box-shadow: 2px 2px 4px rgba(144, 57, 180, 0.5)

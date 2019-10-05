@@ -47,6 +47,8 @@ export default function reducer(
       const newActiveTab =
         state.activeTab && state.activeTab >= newTabs.length
           ? newTabs.length - 1
+          : newTabs.length === 0
+          ? null
           : state.activeTab;
       return {
         ...state,
