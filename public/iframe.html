@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Document</title>
+</head>
+
+<style>
+  h1 {
+    text-align: center;
+    text-transform: capitalize;
+  }
+
+  #date {
+    text-align: center;
+  }
+
+  #table-row td {
+    border: 1px solid rgb(50, 200, 145);
+  }
+
+  table {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  td {
+    text-align: center;
+    border: 1px solid red;
+    width: 30px;
+  }
+
+  button {
+    display: block;
+    margin: 0 auto;
+    padding: 12px 30px;
+    background-color: rgb(159, 6, 6);
+    transition-duration: .3s;
+    border-radius: 8px;
+    color: #ffffff;
+    border: none;
+    font-size: 16px;
+    font-family: sans-serif;
+    font-weight: 700;
+  }
+
+  button:hover {
+    background-color: rgb(104, 9, 9);
+  }
+</style>
+
+<script defer>
+  const ready = () => {
+    const titleHtml = document.getElementById("title"),
+      dateHtml = document.getElementById("date"),
+      tableRowHtml = document.getElementById("table-row"),
+      closeButtonHtml = document.getElementById("close-button"),
+      getParamsFrom = new URLSearchParams(window.location.search).get(
+        "title"
+      ),
+      date = new Date().toLocaleString(),
+      getRandomNum = () => Math.floor(Math.random() * 100),
+      getCurrentTabInfo = () => {
+        const rowChildren = tableRowHtml.childNodes;
+        const amount = [...rowChildren].reduce(
+          (pV, cV) => pV + +cV.innerText,
+          0
+        );
+        return {
+          amount,
+          getParamsFrom,
+          rowChildrenLength: rowChildren.length
+        };
+      },
+      getAlertActiveTabInfo = info => {
+        alert(
+          `Name - ${info.getParamsFrom}, date - ${date}, rows - ${info.rowChildrenLength}, amount - ${info.amount}`
+        );
+      },
+      sendTabinfo = info => {
+        parent.postMessage(info, "*");
+      },
+      removeLastNumber = () => {
+        if (tableRowHtml.childNodes.length) {
+          tableRowHtml.removeChild(
+            tableRowHtml.childNodes[tableRowHtml.childNodes.length - 1]
+          )
+        };
+      },
+      addIntTableData = elem => {
+        const td = document.createElement("td");
+        td.innerHTML = getRandomNum();
+        elem.appendChild(td);
+      },
+      addNumber = () => {
+        addIntTableData(tableRowHtml);
+      },
+      listener = event => {
+        switch (event.data) {
+          case "getActiveTabInfo":
+            getAlertActiveTabInfo(getCurrentTabInfo());
+            break;
+          case "getTabInfo":
+            sendTabinfo(getCurrentTabInfo());
+            break;
+          case "removeLastNumber":
+            removeLastNumber();
+            break;
+          case "addNumber":
+            addNumber();
+            break;
+          default:
+            break;
+        }
+      };
+
+    window.addEventListener("message", listener);
+    closeButtonHtml.addEventListener("click", () => {
+      parent.postMessage("closeTab", "*");
+    });
+
+    titleHtml.innerHTML = getParamsFrom;
+    dateHtml.innerHTML = date;
+
+    for (let i = 0; i < 20; i++) {
+      addIntTableData(tableRowHtml);
+    }
+  };
+
+  document.addEventListener("DOMContentLoaded", ready);
+</script>
+
+<body>
+  <h1 id="title"></h1>
+  <p id="date"></p>
+  <table>
+    <tbody>
+      <tr id="table-row"></tr>
+    </tbody>
+  </table>
+  <button id="close-button">Close tab</button>
+</body>
+
+</html>
