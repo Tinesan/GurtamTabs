@@ -23,7 +23,7 @@ const ActiveTab = memo(() => {
               frameBorder={0}
               src={`./iframe.html?title=${item.title}&id=${item.id}`}
               width="100%"
-              height="250px"
+              height="400px"
             />
           </div>
         ))}

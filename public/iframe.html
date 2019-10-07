@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <title>Document</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.16.1/clusterize.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.16.1/clusterize.min.css">
 </head>
 
 <style>
@@ -29,7 +31,7 @@
 
   td {
     text-align: center;
-    border: 1px solid red;
+    border: 1px solid rgb(121, 73, 73);
     width: 30px;
   }
 
@@ -50,13 +52,16 @@
   button:hover {
     background-color: rgb(104, 9, 9);
   }
+
+  .clusterize {
+    margin-bottom: 20px;
+  }
 </style>
 
 <script defer>
   const ready = () => {
     const titleHtml = document.getElementById("title"),
       dateHtml = document.getElementById("date"),
-      tableRowHtml = document.getElementById("table-row"),
       closeButtonHtml = document.getElementById("close-button"),
       getTitleFromParams = new URLSearchParams(window.location.search).get(
         "title"
@@ -66,60 +71,73 @@
       ),
       date = new Date().toLocaleString(),
       getRandomNum = () => Math.floor(Math.random() * 100),
-      getCurrentTabInfo = () => {
-        const rowChildren = tableRowHtml.childNodes;
-        const amount = [...rowChildren].reduce(
-          (pV, cV) => pV + +cV.innerText,
-          0
-        );
-        return {
-          amount,
-          getTitleFromParams,
-          getIdFromParams,
-          rowChildrenLength: rowChildren.length
-        };
-      },
-      getAlertActiveTabInfo = info => {
-        alert(
-          `Name - ${info.getTitleFromParams}, date - ${date}, rows - ${info.rowChildrenLength}, amount - ${info.amount}`
-        );
-      },
-      sendTabinfo = info => {
-        parent.postMessage(info, "*");
-      },
-      removeLastNumber = () => {
-        if (tableRowHtml.childNodes.length) {
-          tableRowHtml.removeChild(
-            tableRowHtml.childNodes[tableRowHtml.childNodes.length - 1]
-          )
-        };
-      },
-      addIntTableData = elem => {
-        const td = document.createElement("td");
-        td.innerHTML = getRandomNum();
-        elem.appendChild(td);
-      },
-      addNumber = () => {
-        addIntTableData(tableRowHtml);
-      },
+      getInfo = () => ({
+        amount: tableData.getTotalAmount,
+        getTitleFromParams,
+        getIdFromParams,
+        rowChildrenLength: tableData.getTotalRows
+      }),
+      getAlertActiveTabInfo = info =>
+      alert(
+        `Name - ${info.getTitleFromParams}, date - ${date}, rows - ${info.rowChildrenLength}, amount - ${info.amount}`
+      ),
+      sendTabinfo = info => parent.postMessage(info, "*"),
       listener = event => {
         switch (event.data) {
           case "getActiveTabInfo":
-            getAlertActiveTabInfo(getCurrentTabInfo());
+            getAlertActiveTabInfo(getInfo());
             break;
           case "getTabInfo":
-            sendTabinfo(getCurrentTabInfo());
+            sendTabinfo(getInfo());
             break;
           case "removeLastNumber":
-            removeLastNumber();
+            tableData.removeLastNumber();
             break;
           case "addNumber":
-            addNumber();
+            tableData.addNumber();
             break;
           default:
             break;
         }
-      };
+      }
+
+    class TableData {
+      constructor() {
+        this.data = [];
+      }
+
+      addRandomNumbers() {
+        for (let i = 0; i < 5000; i++) {
+          this.data.push(getRandomNum())
+        }
+      }
+      get getTotalRows() {
+        return this.data.length
+      }
+      get getTotalAmount() {
+        return this.data.reduce((pV, cV) => pV + cV)
+      }
+      addNumber() {
+        this.data.push(getRandomNum());
+        clusterize.update(this.data.map(num =>
+          `<tr><td>${num}</td></tr>`))
+      }
+      removeLastNumber() {
+        this.data.pop();
+        clusterize.update(this.data.map(num =>
+          `<tr><td>${num}</td></tr>`))
+      }
+    }
+
+
+    const tableData = new TableData();
+    tableData.addRandomNumbers();
+
+    const clusterize = new Clusterize({
+      rows: tableData.data.map(num => `<tr><td>${num}</td></tr>`),
+      scrollId: 'scroll-area',
+      contentId: 'content-area'
+    })
 
     window.addEventListener("message", listener);
     closeButtonHtml.addEventListener("click", () => {
@@ -129,9 +147,6 @@
     titleHtml.innerHTML = getTitleFromParams;
     dateHtml.innerHTML = date;
 
-    for (let i = 0; i < 20; i++) {
-      addIntTableData(tableRowHtml);
-    }
   };
 
   document.addEventListener("DOMContentLoaded", ready);
@@ -140,11 +155,14 @@
 <body>
   <h1 id="title"></h1>
   <p id="date"></p>
-  <table>
-    <tbody>
-      <tr id="table-row"></tr>
-    </tbody>
-  </table>
+  <div class="clusterize">
+    <div id="scroll-area" class="clusterize-scroll">
+      <table>
+        <tbody id="content-area" class="clusterize-content">
+        </tbody>
+      </table>
+    </div>
+  </div>
   <button id="close-button">Close tab</button>
 </body>
 

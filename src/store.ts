@@ -23,7 +23,15 @@ export default function configureStore() {
       const newRecivedData = [...recivedData, payload];
       if (newRecivedData.length && tabs.length === newRecivedData.length) {
         if (newRecivedData.length === 1) {
-          alert(`${payload.getParamsFrom} has min amount - ${payload.amount}`);
+          const iframeWithMinAmount = document.getElementById(
+            newRecivedData[0].getIdFromParams
+          );
+          if (iframeWithMinAmount) {
+            iframeWithMinAmount.classList.add("min-amount-tab");
+          }
+          alert(
+            `${payload.getTitleFromParams} has min amount - ${payload.amount}`
+          );
         } else {
           const minAmountTab = newRecivedData.sort(
             (a: IframeRecivedItem, b: IframeRecivedItem) => a.amount - b.amount
@@ -35,7 +43,7 @@ export default function configureStore() {
             iframeWithMinAmount.classList.add("min-amount-tab");
           }
           alert(
-            `${minAmountTab.getParamsFrom} has min amount - ${minAmountTab.amount}`
+            `${minAmountTab.getTitleFromParams} has min amount - ${minAmountTab.amount}`
           );
         }
       }
