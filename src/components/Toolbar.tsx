@@ -1,12 +1,11 @@
 import React, { memo } from "react";
-import { useActiceTabContent, useActiveTab } from "../hooks/useSelectors";
+import { useActiveTab } from "../hooks/useSelectors";
 import { useDispatch } from "react-redux";
 import { removeIframeData } from "../reducers/iframeReducer";
 
 const Toolbar = memo(() => {
   const activeTab = useActiveTab();
   const buttonInticator = activeTab === null;
-  const activeTabContent = useActiceTabContent();
   const dispatch = useDispatch();
 
   const handleClickMinAmount = () => {
@@ -20,11 +19,9 @@ const Toolbar = memo(() => {
   };
 
   const activeTabAction = (action: string) => () => {
-    if (activeTabContent) {
-      const frame = document.getElementById(activeTabContent);
-      if (frame) {
-        (frame as any).contentWindow.postMessage(action, "*");
-      }
+    const frame = document.getElementById("active-tab");
+    if (frame) {
+      (frame as any).contentWindow.postMessage(action, "*");
     }
   };
 

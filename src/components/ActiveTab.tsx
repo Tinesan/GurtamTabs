@@ -1,26 +1,27 @@
 import React, { memo } from "react";
-import { useActiceTabContent, useTabs } from "../hooks/useSelectors";
+import { useActiveTab, useTabs } from "../hooks/useSelectors";
+import { Tab } from "../reducers/tabsReduces";
 
 const ActiveTab = memo(() => {
-  const activeTabContent = useActiceTabContent();
+  const activeTab = useActiveTab();
   const tabs = useTabs();
-  const uniqueTabs = tabs.filter((item, pos) => tabs.indexOf(item) === pos);
   return (
     <div className="tab-content">
-      {!!uniqueTabs.length &&
-        uniqueTabs.map((item: string) => (
+      {!!tabs.length &&
+        tabs.map((item: Tab, inx: number) => (
           <div
-            key={item}
+            key={inx}
             className="fraim-container"
             style={{
-              display: activeTabContent === item ? "block" : "none"
+              display: activeTab === inx ? "block" : "none"
             }}
           >
             <iframe
-              id={item}
-              title={item}
+              id={activeTab === inx ? "active-tab" : undefined}
+              title={item.id}
+              data-id={item.id}
               frameBorder={0}
-              src={`./iframe.html?title=${item}`}
+              src={`./iframe.html?title=${item.title}&id=${item.id}`}
               width="100%"
               height="250px"
             />

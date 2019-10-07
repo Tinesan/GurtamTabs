@@ -1,10 +1,10 @@
 import React from "react";
-import { changeActiveTab, removeActiveTab } from "../reducers/tabsReduces";
+import { changeActiveTab, removeActiveTab, Tab } from "../reducers/tabsReduces";
 import { useDispatch } from "react-redux";
 import { useActiveTab } from "../hooks/useSelectors";
 
 type TabsContainerItemProps = {
-  value: string;
+  value: Tab;
   inx: number;
 };
 
@@ -19,11 +19,12 @@ const TabsContainerItem = ({ value, inx }: TabsContainerItemProps) => {
   };
 
   return (
-    <div className={inx === ActiveTab ? "tab-item active" : "tab-item"}>
-      <button onClick={handleChangeActiveTab(inx)}>{value}</button>
-      <button disabled={inx !== ActiveTab} onClick={handleRemoveTab(inx)}>
-        X
-      </button>
+    <div
+      id={value.id}
+      className={inx === ActiveTab ? "tab-item active" : "tab-item"}
+    >
+      <button onClick={handleChangeActiveTab(inx)}>{value.title}</button>
+      <button onClick={handleRemoveTab(inx)}>X</button>
     </div>
   );
 };

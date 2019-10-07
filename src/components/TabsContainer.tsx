@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import TabsContainerItem from "./TabsContainerItem";
 import { useTabs } from "../hooks/useSelectors";
+import { Tab } from "../reducers/tabsReduces";
 
 const TabsContainer = memo(() => {
   const items = useTabs();
@@ -9,7 +10,7 @@ const TabsContainer = memo(() => {
       <h3>TabsContainer</h3>
       <div className="tabs-items-wrapper">
         {items.length > 0 ? (
-          items.map((item: string, inx: number) => {
+          items.map((item: Tab, inx: number) => {
             return <TabsContainerItem value={item} key={inx} inx={inx} />;
           })
         ) : (

@@ -58,8 +58,11 @@
       dateHtml = document.getElementById("date"),
       tableRowHtml = document.getElementById("table-row"),
       closeButtonHtml = document.getElementById("close-button"),
-      getParamsFrom = new URLSearchParams(window.location.search).get(
+      getTitleFromParams = new URLSearchParams(window.location.search).get(
         "title"
+      ),
+      getIdFromParams = new URLSearchParams(window.location.search).get(
+        "id"
       ),
       date = new Date().toLocaleString(),
       getRandomNum = () => Math.floor(Math.random() * 100),
@@ -71,13 +74,14 @@
         );
         return {
           amount,
-          getParamsFrom,
+          getTitleFromParams,
+          getIdFromParams,
           rowChildrenLength: rowChildren.length
         };
       },
       getAlertActiveTabInfo = info => {
         alert(
-          `Name - ${info.getParamsFrom}, date - ${date}, rows - ${info.rowChildrenLength}, amount - ${info.amount}`
+          `Name - ${info.getTitleFromParams}, date - ${date}, rows - ${info.rowChildrenLength}, amount - ${info.amount}`
         );
       },
       sendTabinfo = info => {
@@ -122,7 +126,7 @@
       parent.postMessage("closeTab", "*");
     });
 
-    titleHtml.innerHTML = getParamsFrom;
+    titleHtml.innerHTML = getTitleFromParams;
     dateHtml.innerHTML = date;
 
     for (let i = 0; i < 20; i++) {

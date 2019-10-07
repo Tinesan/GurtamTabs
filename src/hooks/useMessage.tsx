@@ -9,6 +9,7 @@ export const useMessage = () => {
   const activeTab = useActiveTab();
   const listener = useCallback(
     (e: MessageEvent) => {
+      console.log(e.data);
       if (e.data.amount) {
         dispatch(addNewIframeData(e.data));
       }

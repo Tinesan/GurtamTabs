@@ -1,5 +1,6 @@
 import { createStandardAction, getType } from "typesafe-actions";
 import { Action } from "../types";
+import uuid from "uuid";
 
 const ADD_NEW_TAB = "ADD_NEW_TAB";
 const CHANGE_ACTIVE_TAB = "CHANGE_ACTIVE_TAB";
@@ -13,8 +14,13 @@ export const removeActiveTab = createStandardAction(REMOVE_ACTIVE_TAB)<
   number
 >();
 
+export type Tab = {
+  title: string;
+  id: string;
+};
+
 export type TabsReducer = {
-  tabs: string[];
+  tabs: Tab[];
   activeTab: number | null;
 };
 
@@ -32,7 +38,7 @@ export default function reducer(
     case getType(addNewTab):
       return {
         ...state,
-        tabs: [...state.tabs, payload],
+        tabs: [...state.tabs, { title: payload, id: uuid() }],
         activeTab: state.tabs.length
       };
     case getType(changeActiveTab):
@@ -42,7 +48,7 @@ export default function reducer(
       };
     case getType(removeActiveTab):
       const newTabs = [...state.tabs].filter(
-        (item: string, inx: number) => inx !== payload
+        (item: Tab, inx: number) => inx !== payload
       );
       const newActiveTab =
         state.activeTab && state.activeTab >= newTabs.length
